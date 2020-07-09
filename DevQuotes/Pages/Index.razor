@@ -1,0 +1,83 @@
+﻿@page "/"
+@inject HttpClient Http
+
+    <QuoteModal @ref="_quoteModal" />
+
+<section>
+    @if (quotes?.Count > 0)
+    {
+        <div class="row">
+            @foreach (var quote in quotes)
+            {
+                if (quote?.numberOfVotes != null)
+                {
+                    <div class="col-sm-4 pb-4">
+                        <div class="card">
+                            <h5 class="card-header">@quote.author</h5>
+                            <div class="card-body">
+                                <p class="card-text"> @quote.en.Trunc(150) </p>
+
+                                <button type="button" class="btn btn-primary" @onclick="() => _quoteModal.Open(quote.id)">
+                                    View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <div style="margin: 0 auto;">
+            <h5 class="alert alert-info">Quotes no available at the moment...</h5>
+        </div>
+    }
+</section>
+
+
+
+
+
+ @*The Modal 
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+             Modal Header 
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+             Modal body 
+            <div class="modal-body">
+                @quote.en
+            </div>
+
+             Modal footer 
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>*@
+
+
+@code {
+    List<QuotesModel> quotes = new List<QuotesModel>();
+    QuotesModel quote = new QuotesModel();
+    private QuoteModal _quoteModal { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadQuotes();
+        //return base.OnInitializedAsync();
+    }
+
+    protected async Task LoadQuotes()
+    {
+        quotes = await Http.GetFromJsonAsync<List<QuotesModel>>("https://programming-quotes-api.herokuapp.com/quotes");
+    }
+}
